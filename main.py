@@ -8,9 +8,7 @@ import threading
 import pygame
 
 pygame.init()
-# yolo output 
-# C:\Users\TCK\anaconda3\envs\tck\lib\site-packages\ultralytics\engione\predictor.py\basePredictor\클래스에서 Logger.info마크 다운 해제 하면됨
-# face landmark https://github.com/google/mediapipe/blob/a908d668c730da128dfa8d9f6bd25d519d006692/mediapipe/modules/face_geometry/data/canonical_face_model_uv_visualization.png
+
 # ignore the warning message
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
@@ -63,7 +61,6 @@ def play_alarm():
 def face_landmark():
     global frame, box_start, box_end, right_landmark_dict, is_close
     right_landmark_dict = {}
-    # 녹화할 비디오의 설정
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = None
     recording = False
@@ -88,6 +85,7 @@ def face_landmark():
 
                     if results_landmarks.multi_face_landmarks:
                         for face_landmarks in results_landmarks.multi_face_landmarks:
+                            # Left eye
                             # for idx in left_eye_landmarks:
                             #     landmark = face_landmarks.landmark[idx]
                             #     x = int(landmark.x * face_frame.shape[1])
@@ -100,17 +98,15 @@ def face_landmark():
                                 y = int(landmark.y * face_frame_crop.shape[0])
                                 right_landmark_dict[idx] = (x, y)
                                 cv2.circle(face_frame_crop, (x, y), 2, (0, 255, 0), -1)
-                            # print(right_landmark_dict)
                             
                             for i in range(2, len(right_landmark_dict) - 4, 2):
                                 diff_x = right_landmark_dict.get(right_eye_landmarks[i])[0] - right_landmark_dict.get(right_eye_landmarks[i + 1])[0]
                                 diff_y = right_landmark_dict.get(right_eye_landmarks[i])[1] - right_landmark_dict.get(right_eye_landmarks[i + 1])[1]
-                                print("DIFF : ",diff_x, diff_y)
-                                ## need to fix
+
                                 if diff_x > 0 and diff_y < 0:
-                                    is_close = True
-                                else:
                                     is_close = False
+                                else:
+                                    is_close = True
                                     
                             face_frame[y1:y2, x1:x2] = face_frame_crop
                             
@@ -133,11 +129,9 @@ def face_landmark():
                                     out = None
                                 break
                             if is_close and time.time() - start_time >= 2:
-                                # alarm.mp3 재생
                                 if not pygame.mixer.music.get_busy():
                                     threading.Thread(target=play_alarm).start()
-                                #     pygame.mixer.music.play()
-                                # 비디오 녹화 시작
+        
                                 if out is None:
                                     now = time.strftime("%Y-%m-%d_%H-%M-%S")
                                     out = cv2.VideoWriter(f"./calendar/{now}.avi", fourcc, 20.0, (frame.shape[1], frame.shape[0]))
