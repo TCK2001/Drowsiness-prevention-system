@@ -48,7 +48,7 @@ class TodoDialog(QDialog):
     def playVideo(self, item):
         filename = item.text()
         filepath = os.path.join(".", filename)
-        os.system(filepath)  # 해당 동영상을 재생합니다.
+        os.system(filepath)  
 
 class MyApp(QWidget):
     def __init__(self):
@@ -59,19 +59,20 @@ class MyApp(QWidget):
         QLocale.setDefault(QLocale(QLocale.English, QLocale.UnitedStates))
         
         self.cal = QCalendarWidget(self)
-        self.cal.setFirstDayOfWeek(Qt.Sunday)  # 시작 요일을 일요일로 설정
+        # sunday start
+        self.cal.setFirstDayOfWeek(Qt.Sunday)  
         self.cal.setGridVisible(True)
-        self.cal.clicked[QDate].connect(self.showDate) # 클릭하면은
+        self.cal.clicked[QDate].connect(self.showDate) 
 
         self.lbl = QLabel(self)
         date = self.cal.selectedDate()
         self.lbl.setText(date.toString())
 
-        self.vbox = QVBoxLayout()   # 기본 간격
-        self.vbox.addWidget(self.cal) # 달력
-        self.vbox.addWidget(self.lbl) # 출력 라벨
+        self.vbox = QVBoxLayout()  
+        self.vbox.addWidget(self.cal) 
+        self.vbox.addWidget(self.lbl)
 
-        self.setLayout(self.vbox) # 간격 set
+        self.setLayout(self.vbox)
 
         self.setWindowTitle('Record (Made by TCK)')
         self.setGeometry(400, 400, 800, 600)
@@ -88,10 +89,10 @@ class MyApp(QWidget):
         self.colorCalendarDates()
 
     def showDate(self, date):
-        self.lbl.setText(date.toString()) # 날짜 좌측 하단에 출력하고
+        self.lbl.setText(date.toString()) 
         self.openTodoDialog(date) 
 
-    def openTodoDialog(self, date): # 바로 Todo 창 출력
+    def openTodoDialog(self, date): 
         dialog = TodoDialog(date)
         dialog.exec_()
 
@@ -99,7 +100,6 @@ class MyApp(QWidget):
         connection = sqlite3.connect("todo.db")
         cursor = connection.cursor()
 
-        # duplicate 방지
         # Clear the existing videos table
         cursor.execute("DROP TABLE IF EXISTS videos")
         cursor.execute("CREATE TABLE videos (date TEXT, filename TEXT)")
